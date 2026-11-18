@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Azzah &amp; Bayu</title>
+<style>
+:root{--bg:#3b2a1c;--card:#fff8ea;--ink:#4a2f1a;--green:#4c7a45;--pink:#d9667a;--wood:#8a5a32;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root{--bg:#1f160e}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink);overflow:hidden;touch-action:none}
+#app{position:fixed;inset:0;max-width:520px;margin:auto;overflow:hidden}
+canvas{width:100%;height:100%;display:block}
+#title{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:10px;background:var(--wood);border:3px solid #5c3a1e;border-radius:10px;padding:6px 14px;text-align:center;box-shadow:0 3px 0 #3d2410;pointer-events:none}
+#title small{display:block;background:var(--card);border-radius:4px;font-size:8px;letter-spacing:.08em;padding:2px 6px;font-weight:700}
+#title b{display:block;color:#ffd770;font-size:22px;text-shadow:0 2px 0 #3d2410}
+#title i{display:block;font-style:normal;background:#6b4425;color:#f6dcae;border-radius:99px;font-size:9px;padding:2px 8px;font-weight:700;margin-top:2px}
+.lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#fff;border-radius:99px;padding:4px 10px;font:700 11px ui-rounded,system-ui,sans-serif;white-space:nowrap;box-shadow:0 2px 0 #0003;color:var(--ink);border:0}
+.lbl:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:inherit}
+.lbl.d{background:#f7a8b8}
+.lbl{z-index:1}#joy,#act,#tabs{z-index:2}#say{z-index:5}#modal{z-index:10}
+#pick{position:absolute;inset:0;z-index:20;background:linear-gradient(#a8d8e8,#cfe9b8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center}
+#pick h2{margin:0;font-size:24px}#pick p{margin:0;font-size:14px}
+#cards{display:flex;gap:12px}#cards button{width:130px;padding:14px 8px;border-radius:18px;border:4px solid transparent;background:var(--card);font:800 16px inherit;font-family:inherit;color:var(--ink)}
+#cards button span{display:block;font-size:56px}#cards button.on,#sw i.on{border-color:var(--green);box-shadow:0 0 0 3px #fff}
+#sw{display:flex;gap:10px}#sw i{width:38px;height:38px;border-radius:50%;border:4px solid #fff8;display:block}
+#nm{max-width:260px;text-align:center}
+.ch{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.ch b{padding:6px 12px;border-radius:99px;background:var(--card);font-size:13px;border:3px solid transparent}.ch b.on{border-color:var(--green)}
+.ph{aspect-ratio:3/4;background:#ecd9b5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:56px;border:4px solid #fff}
+#box img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;border:4px solid #fff;display:block}
+#box figure{flex:1;margin:0;text-align:center;font-weight:800;font-size:14px}#box figcaption{margin-top:6px}
+#mus{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:10px;width:42px;height:42px;border-radius:50%;border:3px solid #5c3a1e;background:var(--card);font-size:18px;opacity:.55}
+#joy{position:absolute;left:18px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:96px;height:96px;border-radius:50%;background:#ffffff40;border:2px solid #ffffff80}
+#knob{position:absolute;left:30px;top:30px;width:36px;height:36px;border-radius:50%;background:#fff;box-shadow:0 2px 6px #0004}
+#act{position:absolute;right:18px;bottom:calc(88px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:3px solid #fff;background:var(--green);color:#fff;font-weight:800;font-size:12px;display:none}
+#tabs{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;background:#fff8eaee;border-radius:99px;padding:5px}
+#tabs button{flex:1;border:0;border-radius:99px;padding:9px 4px;font:700 12px inherit;font-family:inherit;background:none;color:var(--ink)}
+#tabs button:first-child{background:var(--green);color:#fff}
+#say{position:absolute;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--card);border:3px solid var(--wood);border-radius:16px;padding:12px 14px;font-size:14px;display:none}
+#say em{position:absolute;top:-14px;left:14px;background:var(--wood);color:#fff;font-style:normal;font-size:11px;font-weight:800;padding:2px 10px;border-radius:8px}
+#modal{position:absolute;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:18px}
+#box{background:var(--card);border:4px solid var(--wood);border-radius:20px;padding:18px;width:100%;max-height:82%;overflow:auto;touch-action:pan-y;position:relative}
+#box h2{margin:6px 0;font-size:20px}#box p{margin:6px 0;line-height:1.5;font-size:14px}
+.row{display:flex;gap:10px;background:#fff;border:2px solid #ecd9b5;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:13px}
+.row b{background:var(--wood);color:#fff;border-radius:6px;padding:1px 7px;height:fit-content;font-size:12px}
+.btn{display:block;width:100%;border:0;border-radius:10px;padding:11px;margin-top:8px;font:800 14px inherit;font-family:inherit;color:#fff;background:var(--green);text-align:center;text-decoration:none}
+.btn.p{background:var(--pink)}
+#x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:22px;color:var(--ink)}
+input,textarea{width:100%;font:14px inherit;font-family:inherit;padding:9px;border:2px solid #ecd9b5;border-radius:10px;margin:4px 0;background:#fff;color:var(--ink)}
+label{font-size:13px;margin-right:12px}
+</style></head><body>
+<div id="app">
+<canvas id="c"></canvas><div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#3a1a4a44 100%)"></div>
+<div id="title"><small>PERNIKAHAN DI TENGAH KEBUN</small><b>Azzah &amp; Bayu</b><i>SABTU · 19 JUNI 2027</i></div>
+<div id="joy"><div id="knob"></div></div>
+<button id="mus">🎵</button><button id="act">BUKA</button>
+<div id="say"><em id="who"></em><span id="txt"></span></div>
+<div id="tabs"><button data-g="surat">Surat buat kamu</button><button data-g="detail">Detail acara</button><button data-g="rsvp">Ucapan &amp; RSVP</button></div>
+<div id="pick"><h2>Pilih karakter kamu</h2><p>Kamu akan jalan-jalan di kebun Azzah &amp; Bayu</p><div id="cards"><button data-s="boy" class="on"><span>👦</span>Cowok</button><button data-s="girl"><span>👧</span>Cewek</button></div><p>Warna baju</p><div id="sw"><i data-c="#6a8fd9" class="on"></i><i data-c="#e8a1c4"></i><i data-c="#b79ae6"></i><i data-c="#7fc98f"></i><i data-c="#f2b36d"></i></div><p>Rambut</p><div class="ch" data-k="h"><b data-v="short">Pendek</b><b data-v="long">Panjang</b><b data-v="bun">Cepol</b></div><p>Aksesori</p><div class="ch" data-k="a"><b data-v="hat">Topi</b><b data-v="glasses">Kacamata</b><b data-v="flower">Bunga</b></div><input id="nm" placeholder="Namamu (boleh dikosongkan)" maxlength="20"><button class="btn" id="go" style="max-width:260px">Mulai jalan-jalan</button></div>
+<div id="modal"><div id="box"><button id="x">×</button><div id="in"></div></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const W=18,H=28,app=document.getElementById('app'),cv=document.getElementById('c');
+const sc=new THREE.Scene();sc.background=new THREE.Color('#c4e8f2');sc.fog=new THREE.Fog('#d9eef0',22,46);
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+const cam=new THREE.PerspectiveCamera(42,1,.1,60);
+sc.add(new THREE.HemisphereLight('#fff4e6','#a3d18f',.95));
+const sun=new THREE.DirectionalLight('#ffdcae',.95);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.bias=-.0005;
+Object.assign(sun.shadow.camera,{left:-16,right:16,top:16,bottom:-16,far:50});sc.add(sun,sun.target);
+function rs(){const w=app.clientWidth,h=app.clientHeight;R.setPixelRatio(Math.min(devicePixelRatio,1.6));R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',rs);rs();
+const MC={},GC={},CH=[],PAL={'#86b861':'#a2d68f','#e3c993':'#f3dfb4','#4fb3c0':'#86d3e6','#3f8a3f':'#74c46f','#5fae55':'#92d98c','#74c068':'#ace8a2','#b9562f':'#e08a5c','#d9663a':'#f0956a','#8c3d20':'#c9704a','#c4452a':'#e5644f','#cf4f2d':'#f08a63','#a0703c':'#c9965f','#6b4425':'#8a5f3a','#f1dfb5':'#fbeccb','#8fd0cf':'#a9e4e6','#e8a1a4':'#f4b6c2','#f3b9bb':'#f9cdd6'};
+const mt=c=>{c=PAL[c]||c;return MC[c]||(MC[c]=new THREE.MeshLambertMaterial({color:c}))};
+const B=(w,h,d,c,x,y,z,p)=>{const k=w+','+h+','+d,m=new THREE.Mesh(GC[k]||(GC[k]=new THREE.BoxGeometry(w,h,d)),mt(c));m.position.set(x,y+h/2,z);m.castShadow=w*h*d>.03;m.receiveShadow=true;(p||sc).add(m);return m};
+// dunia
+B(W,.3,H,'#86b861',W/2,-.3,H/2);B(2,.02,H,'#e3c993',9,0,H/2);B(12,.02,1,'#e3c993',9,0,11.5);
+B(W,.05,2,'#4fb3c0',W/2,-.02,21);
+B(2,.14,2.6,'#b9562f',9,0,21);B(.15,.5,2.6,'#d9663a',8.05,.14,21);B(.15,.5,2.6,'#d9663a',9.95,.14,21);
+[8,10].forEach(x=>B(.25,2.2,.25,'#c4452a',x,0,19.9));B(2.8,.25,.35,'#c4452a',9,2.2,19.9);B(2.3,.12,.2,'#8c3d20',9,1.7,19.9);
+for(let x=0;x<W;x+=1){if(x>=8&&x<10)continue;B(.12,.6,.12,'#a0703c',x+.5,0,15);B(1,.08,.08,'#a0703c',x+.5,.35,15)}
+// rumah
+B(6,2.4,2.6,'#f1dfb5',9,0,4);B(1.4,1.6,.1,'#a0703c',9,0,5.32);[6.9,11.1].forEach(x=>B(.8,.8,.1,'#8fd0cf',x,.9,5.32));
+const rf=new THREE.Group(),cone=new THREE.Mesh(new THREE.ConeGeometry(4.7,1.9,4),new THREE.MeshLambertMaterial({color:'#cf4f2d'}));
+cone.rotation.y=Math.PI/4;cone.castShadow=true;rf.add(cone);rf.scale.z=.55;rf.position.set(9,3.35,4);sc.add(rf);
+B(4.6,.12,4.6,'#fff',9,0,7).geometry=new THREE.CylinderGeometry(2.3,2.3,.12,24);
+const arch=new THREE.Mesh(new THREE.TorusGeometry(1.1,.12,6,16,Math.PI),new THREE.MeshLambertMaterial({color:'#e7a5b4'}));arch.position.set(9,.12,6.3);sc.add(arch);
+// pohon
+const trees=[[1,3],[2,8],[1,14],[3,15],[14,3],[16,8],[15,15],[16,17],[2,24],[15,24],[12,16],[5,6],[13,6],[1,19],[16,12],[3,1],[15,1]],pinkT=[[2,8],[16,8],[3,15],[15,15],[3,1]];
+trees.forEach(([a,b])=>{const pk=pinkT.some(p=>p[0]==a&&p[1]==b),x=a+.5,z=b+.5;B(.3,.7,.3,'#6b4425',x,0,z);
+ B(1.1,1,1.1,pk?'#e8a1a4':'#3f8a3f',x,.7,z);B(.8,.8,.8,pk?'#f3b9bb':'#5fae55',x,1.6,z);B(.45,.5,.45,pk?'#f6c8ca':'#74c068',x,2.3,z)});
+for(let i=0;i<50;i++){const x=1+Math.random()*16,z=1+Math.random()*26;if(Math.abs(x-9)<1||(z>19&&z<23))continue;B(.1,.15,.1,i%3?'#fff':'#f7a8b8',x,0,z)}
+// manusia
+function personOld(x,z,body,hair,hat,st){const g=new THREE.Group();
+ B(.18,.35,.18,'#4a3a2a',-.12,0,0,g);B(.18,.35,.18,'#4a3a2a',.12,0,0,g);B(.5,.5,.3,body,0,.35,0,g);B(.4,.38,.38,'#f0c7a0',0,.85,0,g);B(.44,.14,.42,hair,0,1.1,0,g);
+ B(.05,.05,.02,'#2a1a10',-.1,1.0,.2,g);B(.05,.05,.02,'#2a1a10',.1,1.0,.2,g);
+ if(hat){B(.8,.06,.8,'#e3c06a',0,1.18,0,g);B(.42,.2,.42,'#c9a24a',0,1.24,0,g)}
+ const sk=(c,r0,r1,h,y)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r0,r1,h,16),new THREE.MeshLambertMaterial({color:c}));m.position.y=y;m.castShadow=true;g.add(m)};
+ if(st==='groom'){const J='#1a1a1f';B(.2,.36,.2,J,-.12,0,0,g);B(.2,.36,.2,J,.12,0,0,g);B(.54,.52,.33,J,0,.34,0,g);B(.16,.4,.02,'#ffffff',0,.42,.17,g);B(.16,.06,.03,J,0,.78,.18,g);B(.16,.44,.2,J,-.36,.3,0,g);B(.16,.44,.2,J,.36,.3,0,g);B(.12,.12,.12,'#f0c7a0',-.36,.22,0,g);B(.12,.12,.12,'#f0c7a0',.36,.22,0,g)}
+ if(st==='bride'||st==='girl'){sk(st==='bride'?'#ffffff':body,.26,.55,.8,.4);B(.46,.5,.12,hair,0,.5,-.2,g)}
+ if(st==='bride'){B(.5,.9,.05,'#ffffff',0,.35,-.3,g);B(.46,.06,.44,'#f7a8b8',0,1.08,0,g);B(.2,.18,.2,'#ff8fa3',0,.55,.38,g);B(.1,.12,.1,'#5fae55',0,.43,.38,g)}
+ g.position.set(x,0,z);sc.add(g);return g}
+function animC(g,t,mv){const u=g.userData,s=t/1000+u.ph;
+ if(mv){const w=Math.sin(s*11);u.lL.rotation.x=w*.75;u.lR.rotation.x=-w*.75;u.aL.rotation.x=-w*.6;u.aR.rotation.x=w*.6;u.body.position.y=Math.abs(w)*.07;u.aL.rotation.z=u.aR.rotation.z=0}
+ else{[u.lL,u.lR,u.aL,u.aR].forEach(p=>p.rotation.x*=.8);u.body.position.y=Math.sin(s*2)*.015;u.aL.rotation.z=.06+Math.sin(s*2)*.03;u.aR.rotation.z=u.wave?-2.6+Math.sin(s*9)*.35:-.06-Math.sin(s*2)*.03}
+ u.head.rotation.y+=((u.look||0)-u.head.rotation.y)*.12;u.head.rotation.x=mv?.05:Math.sin(s*1.5)*.03;u.eyes.scale.y=(s%3.6)>3.48?.1:1}
+function person(x,z,body,hair,hat,st,o){const g=new THREE.Group(),S='#f6cfb0',K='#2a1a14',gown=st==='bride',girl=st==='girl',groom=st==='groom',sh=gown||girl,long=o&&o.h?o.h==='long':sh,bx=(w,h,d,c,px,py,pz,p)=>B(w,h,d,c,px,py,pz,p||g),pv=(P0,px,py)=>{const q=new THREE.Group();q.position.set(px,py,0);P0.add(q);return q};
+ const bd=pv(g,0,0),L=pv(g,-.12,.4),Rr=pv(g,.12,.4),aL=pv(bd,-.37,.84),aR=pv(bd,.37,.84),hd=pv(bd,0,.86),ey=pv(hd,0,.27),pants=groom?'#ffffff':'#34344a',shoe=groom?'#2a2226':'#f4f4fa';
+ [L,Rr].forEach(l=>{if(girl||gown)bx(.16,.4,.16,S,0,-.4,0,l);else bx(.22,.4,.24,pants,0,-.4,0,l);bx(.24,.09,.32,shoe,0,-.4,.04,l)});
+ if(gown){[[1,.04],[.84,.2],[.68,.36]].forEach(l=>bx(l[0],.17,l[0]*.85,'#ffffff',0,l[1],0,bd));bx(.5,.34,.3,'#ffffff',0,.52,0,bd);bx(.54,.07,.34,'#ffd9e4',0,.56,0,bd);bx(.8,1.4,.05,'#f4f7ff',0,.1,-.42,bd);bx(.24,.2,.22,'#ff9bb5',0,.5,.3,bd);bx(.12,.14,.12,'#4f9f4f',0,.38,.3,bd);bx(.1,.1,.1,'#ffffff',.06,.62,.32,bd)}
+ else if(girl){bx(.64,.16,.52,body,0,.26,0,bd);bx(.54,.14,.44,body,0,.38,0,bd);bx(.46,.34,.28,body,0,.5,0,bd);bx(.68,.04,.56,'#ffffff',0,.24,0,bd);bx(.2,.05,.06,'#ffffff',0,.82,.14,bd)}
+ else{bx(.52,.46,.3,body,0,.4,0,bd);if(!groom){bx(.04,.18,.02,'#ffffff',-.08,.56,.16,bd);bx(.04,.18,.02,'#ffffff',.08,.56,.16,bd);bx(.5,.1,.34,body,0,.8,-.02,bd)}}
+ if(groom){bx(.12,.34,.02,'#e8e8ee',0,.5,.16,bd);bx(.2,.08,.05,'#111111',0,.78,.16,bd);bx(.54,.05,.32,'#2a2226',0,.4,0,bd);bx(.08,.08,.04,'#ffd1dc',.14,.7,.16,bd)}
+ [aL,aR].forEach(a=>{if(sh){bx(.16,.16,.2,gown?'#ffffff':body,0,-.16,0,a);bx(.13,.3,.16,S,0,-.46,0,a)}else{bx(.16,.34,.2,body,0,-.34,0,a);bx(.13,.12,.16,S,0,-.46,0,a)}});
+ bx(.66,.58,.6,S,0,0,0,hd);bx(.6,.64,.54,S,0,-.03,0,hd);
+ [-1,1].forEach(s=>{bx(.08,.15,.03,K,s*.16,-.075,.32,ey);bx(.03,.04,.03,'#ffffff',s*.17,.0,.335,ey);bx(.12,.06,.03,'#f7a8b4',s*.25,.12,.32,hd);bx(.1,.025,.03,hair,s*.16,.4,.31,hd)});bx(.1,.03,.03,'#c4685e',0,.08,.31,hd);
+ bx(.72,.2,.66,hair,0,.5,0,hd);bx(.66,.16,.06,hair,0,.4,.32,hd);[-1,1].forEach(s=>bx(.07,long?.62:.3,.62,hair,s*.36,long?-.04:.26,0,hd));bx(.72,long?.66:.4,.1,hair,0,long?-.06:.2,-.33,hd);
+ if(o&&o.h==='bun')bx(.3,.3,.3,hair,0,.66,-.12,hd);if(girl)bx(.2,.1,.06,'#f7a8c4',.28,.52,.33,hd);
+ if(gown){bx(.5,.1,.3,'#e6f0ff',0,.7,.1,hd);bx(.1,.1,.1,'#e6f0ff',0,.78,.2,hd)}
+ if(o&&o.a==='glasses'){bx(.22,.15,.03,'#1a1a1a',-.16,.2,.34,hd);bx(.22,.15,.03,'#1a1a1a',.16,.2,.34,hd);bx(.12,.04,.03,'#1a1a1a',0,.26,.34,hd)}
+ if(o&&o.a==='flower'){bx(.16,.16,.06,'#ff9bb5',.28,.5,.33,hd);bx(.07,.07,.07,'#ffffff',.28,.54,.36,hd)}
+ if(hat||(o&&o.a==='hat')){bx(1,.06,1,'#e3c06a',0,.66,0,hd);bx(.52,.18,.52,'#c9a24a',0,.7,0,hd)}
+ g.userData={lL:L,lR:Rr,aL,aR,body:bd,head:hd,eyes:ey,ph:Math.random()*6};g.position.set(x,0,z);sc.add(g);CH.push(g);return g}
+function personV1(x,z,body,hair,hat,st,o){const g=new THREE.Group(),S='#f6cfb0',K='#2a1a14',gown=st==='bride',girl=st==='girl',groom=st==='groom',bx=(w,h,d,c,px,py,pz)=>B(w,h,d,c,px,py,pz,g);
+ const pants=groom?'#ffffff':'#2b2b35',shoe=groom?'#2a2226':'#f0f0f8';
+ if(!gown&&!girl){bx(.2,.3,.22,pants,-.11,.06,0);bx(.2,.3,.22,pants,.11,.06,0)}else if(girl){bx(.14,.22,.14,S,-.1,.04,0);bx(.14,.22,.14,S,.1,.04,0)}
+ bx(.22,.08,.28,shoe,-.11,0,.03);bx(.22,.08,.28,shoe,.11,0,.03);
+ if(gown){[[.95,.04,'#ffffff'],[.8,.2,'#fff4f8'],[.64,.36,'#ffffff']].forEach(l=>bx(l[0],.17,l[0]*.85,l[2],0,l[1],0));bx(.44,.3,.3,'#ffffff',0,.52,0);bx(.5,.07,.34,'#ffd9e4',0,.52,0)}
+ else if(girl){bx(.6,.14,.5,body,0,.22,0);bx(.5,.14,.4,body,0,.34,0);bx(.4,.3,.26,body,0,.46,0);bx(.64,.04,.54,'#ffffff',0,.2,0)}
+ else bx(.44,.4,.28,body,0,.36,0);
+ const sl=gown?'#ffffff':girl?body:body,ay=gown||girl?.46:.4;
+ [-1,1].forEach(s=>{bx(.14,.3,.18,gown||girl?sl:body,s*.3,ay,0);bx(.12,.1,.14,S,s*.3,ay-.08,0)});
+ bx(.64,.58,.58,S,0,.76,0);[-1,1].forEach(s=>{bx(.08,.14,.03,K,s*.16,.98,.3);bx(.12,.07,.03,'#f3a3a3',s*.24,.88,.3)});
+ const long=o&&o.h?o.h==='long':gown||girl;
+ bx(.7,.2,.64,hair,0,1.26,0);bx(.66,.14,.06,hair,0,1.2,.3);bx(.08,long?.6:.3,.6,hair,-.35,long?.8:1.0,0);bx(.08,long?.6:.3,.6,hair,.35,long?.8:1.0,0);bx(.7,long?.6:.3,.1,hair,0,long?.75:1.0,-.32);
+ if(groom){bx(.2,.08,.05,'#111111',0,.68,.15);bx(.1,.3,.02,'#e8e8ee',0,.42,.15);bx(.08,.08,.04,'#ffd1dc',.12,.56,.16)}
+ if(gown){bx(.8,1.3,.05,'#f4f7ff',0,.2,-.42);bx(.5,.1,.3,'#e6f0ff',0,1.44,.1);bx(.1,.1,.1,'#e6f0ff',0,1.52,.2);bx(.22,.2,.2,'#ff9bb5',0,.52,.3);bx(.1,.12,.1,'#4f9f4f',0,.42,.3)}
+ if(girl)bx(.18,.1,.06,'#f7a8c4',.22,1.4,.1);
+ if(o&&o.h==='bun')bx(.3,.3,.3,hair,0,1.44,-.1);
+ if(o&&o.a==='glasses'){bx(.22,.14,.03,'#1a1a1a',-.16,.98,.33);bx(.22,.14,.03,'#1a1a1a',.16,.98,.33);bx(.12,.04,.03,'#1a1a1a',0,1.04,.33)}
+ if(o&&o.a==='flower'){bx(.16,.16,.06,'#ff9bb5',.26,1.3,.33);bx(.07,.07,.07,'#ffffff',.26,1.34,.36)}
+ if(hat||(o&&o.a==='hat')){bx(.95,.06,.95,'#e3c06a',0,1.4,0);bx(.5,.16,.5,'#c9a24a',0,1.45,0)}
+ g.position.set(x,0,z);sc.add(g);return g}
+arch.visible=false;B(1.4,.03,3.4,'#e8663a',9,0,9.2);[7.2,10.8].forEach(x=>{B(.25,2.3,.25,'#c4452a',x,0,6);B(.5,1.8,.1,'#ffffff',x+(x<9?.35:-.35),.5,6);B(.45,.4,.35,'#f7a8c4',x,1.7,6.1)});B(3.9,.3,.4,'#f6efe0',9,2.3,6);
+person(8.5,7.2,'#ffffff','#3a2520',0,'groom');person(9.5,7.2,'#ffffff','#5a3a2e',0,'bride');
+const P={x:9,z:25,m:person(9,25,'#6a8fd9','#3a2a1a',false)};
+const NPC=[{x:7.2,z:23.2,n:'Penjaga buku tamu',st:'girl',body:'#d9667a',t:'Hari ini aku yang jaga buku tamu buat Azzah & Bayu. Jalan ke utara, lewati jembatan ya!'},{x:10.8,z:8.6,n:'Sepupu Azzah',st:'girl',body:'#e8a1c4',t:'Kamu datang! Azzah sama Bayu senang banget kamu ada di sini. 💛'},{x:6,z:14,n:'Tamu kebun',body:'#6a8fd9',t:'Coba papan di sebelah sana, ada jadwal acaranya!'}];
+NPC.forEach(n=>n.m=person(n.x,n.z,n.body,'#3a2a1a',0,n.st));
+// titik interaktif
+const spots={surat:{x:6.5,z:17.5,l:'Surat buat kamu',c:'#e66a78'},detail:{x:4.5,z:11.5,l:'Detail acara',c:'#f3e2bd',d:1},rsvp:{x:13.5,z:11.5,l:'Ucapan & RSVP',c:'#f3e2bd'},janji:{x:9,z:8.2,l:'Janji suci',c:'#fff',h:2.2},foto:{x:11.5,z:18.5,l:'Foto kami',c:'#ffd9e4',d:1}};
+for(const k of['surat','detail','rsvp','foto']){const s=spots[k];B(.12,.8,.12,'#8a5a32',s.x,0,s.z);B(.9,.6,.12,s.c,s.x,.8,s.z)}
+for(const k in spots){const s=spots[k],e=document.createElement('button');e.className='lbl'+(s.d?' d':'');e.textContent=s.l;e.style.borderTopColor=s.d?'#f7a8b8':'#fff';e.onclick=()=>near===k?show(k):walk(k);app.appendChild(e);s.e=e}
+function walk(k){const s=spots[k];target={x:s.x,z:s.z+1.2,k}}
+// UI
+const modal=document.getElementById('modal'),sayEl=document.getElementById('say');let sayT,target=null,near=null;
+function open(h){document.getElementById('in').innerHTML=h;modal.style.display='flex'}
+document.getElementById('x').onclick=()=>modal.style.display='none';
+const ucapan=[];
+function show(k){burst(P.x,P.z);
+ if(k==='surat')open('<h2>Surat buat kamu</h2><p>Halo, kamu yang spesial ✨</p><p>Kami lagi menyiapkan satu hari yang sederhana, hangat, dan penuh orang-orang tersayang. Kehadiranmu adalah hadiah terbaik buat kami.</p><p>Sampai ketemu di kebun, ya!<br><b>— Azzah &amp; Bayu</b></p>');
+ if(k==='detail')open('<small style="background:var(--pink);color:#fff;border-radius:6px;padding:2px 8px;font-weight:800;font-size:10px">HARI-H · DETAIL ACARA</small><h2>Sabtu yang pelan dan cerah.</h2><p>Semua acara ada di Rumah Kebun Cemara, di tengah kebun yang rindang.</p><div class="row"><b>15.00</b>Janji suci di bawah lengkung bunga</div><div class="row"><b>16.00</b>Makan malam di kebun</div><div class="row"><b>17.30</b>Potong kue &amp; sesi foto</div><div class="row"><b>19.00</b>Penutupan dengan lampu kebun</div><a class="btn" href="https://maps.google.com" target="_blank">Buka di Maps</a>');
+ if(k==='rsvp')rsvp();
+ if(k==='foto')open('<h2>Foto kami</h2><p>Dua orang yang sebentar lagi jadi satu keluarga 💛</p><div style="display:flex;gap:10px;margin-top:8px"><figure><img src="foto-azzah.jpg" alt="Azzah" onerror="ph(this)"><figcaption>Azzah</figcaption></figure><figure><img src="foto-bayu.jpg" alt="Bayu" onerror="ph(this)"><figcaption>Bayu</figcaption></figure></div>');
+ if(k==='janji')say('Azzah & Bayu','Terima kasih sudah datang. Doakan kami, ya! 💛')}
+function ph(i){const d=document.createElement('div');d.className='ph';d.textContent=i.alt==='Azzah'?'👰':'🤵';i.replaceWith(d)}
+function rsvp(){open('<h2>Ucapan &amp; RSVP</h2><input id="n" placeholder="Namamu"><div style="margin:6px 0"><label><input type="radio" name="h" value="Hadir" checked style="width:auto"> Hadir</label><label><input type="radio" name="h" value="Berhalangan" style="width:auto"> Berhalangan</label></div><textarea id="m" rows="3" placeholder="Tulis ucapan..."></textarea><button class="btn p" onclick="send()">Kirim</button><div>'+ucapan.map(u=>'<div class="row"><div><b style="background:none;color:var(--ink);padding:0">'+u[0]+' ('+u[1]+')</b><br>'+u[2]+'</div></div>').join('')+'</div>')}
+function send(){const e=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));ucapan.unshift([e(document.getElementById('n').value.trim()||'Tamu'),document.querySelector('input[name=h]:checked').value,e(document.getElementById('m').value)]);rsvp()}
+function say(w,t){document.getElementById('who').textContent=w;document.getElementById('txt').textContent=t;sayEl.style.display='block';clearTimeout(sayT);sayT=setTimeout(()=>sayEl.style.display='none',4500)}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>walk(b.dataset.g));
+const act=document.getElementById('act');act.onclick=()=>near&&show(near);
+const keys={};addEventListener('keydown',e=>keys[e.key]=1);addEventListener('keyup',e=>keys[e.key]=0);
+const joy=document.getElementById('joy'),knob=document.getElementById('knob');let jv={x:0,y:0},jid=null;
+function jm(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-48,dy=e.clientY-r.top-48,d=Math.hypot(dx,dy)||1,k=Math.min(d,36)/d;knob.style.transform=`translate(${dx*k}px,${dy*k}px)`;jv={x:dx*k/36,y:dy*k/36}}
+joy.onpointerdown=e=>{jid=e.pointerId;joy.setPointerCapture(jid);jm(e);target=null};
+joy.onpointermove=e=>{if(e.pointerId===jid)jm(e)};
+joy.onpointerup=joy.onpointercancel=()=>{jid=null;jv={x:0,y:0};knob.style.transform=''};
+function blocked(x,z){
+ if(x<.6||x>W-.6||z<.8||z>H-.5)return true;
+ if(z>20&&z<22&&!(x>8&&x<10))return true;
+ if(x>5.8&&x<12.2&&z<5.6)return true;
+ return trees.some(([a,b])=>Math.abs(x-a-.5)<.8&&Math.abs(z-b-.5)<.8)}
+
+let last=performance.now(),moving=false;const v=new THREE.Vector3();
+let yaw=0,pit=.95,dist=15;const pts=new Map();
+cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY])};
+cv.onpointermove=e=>{const o=pts.get(e.pointerId);if(!o)return;const dx=e.clientX-o[0],dy=e.clientY-o[1];
+ if(pts.size===1){yaw-=dx*.008;pit=Math.max(.45,Math.min(1.35,pit+dy*.005))}
+ else{const q=[...pts.entries()].find(([i])=>i!==e.pointerId)[1],d0=Math.hypot(o[0]-q[0],o[1]-q[1]),d1=Math.hypot(e.clientX-q[0],e.clientY-q[1]);dist=Math.max(8,Math.min(28,dist-(d1-d0)*.06))}
+ pts.set(e.pointerId,[e.clientX,e.clientY])};
+cv.onpointerup=cv.onpointercancel=e=>pts.delete(e.pointerId);
+cv.onwheel=e=>{dist=Math.max(8,Math.min(28,dist+e.deltaY*.01))};
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;
+ let ax=jv.x+(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),az=jv.y+(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);
+ {const c=Math.cos(yaw),s=Math.sin(yaw),rx=ax*c+az*s;az=-ax*s+az*c;ax=rx}
+ if(target){const dx=target.x-P.x,dz=target.z-P.z,d=Math.hypot(dx,dz);if(d<.25){const k=target.k;target=null;show(k)}else{ax=dx/d;az=dz/d}}
+ const m=Math.hypot(ax,az);moving=m>.1;
+ if(moving){if(m>1){ax/=m;az/=m}const nx=P.x+ax*4*dt,nz=P.z+az*4*dt;if(!blocked(nx,P.z))P.x=nx;if(!blocked(P.x,nz))P.z=nz;{let da=Math.atan2(ax,az)-P.m.rotation.y;da=Math.atan2(Math.sin(da),Math.cos(da));P.m.rotation.y+=da*.25}}
+ P.m.position.set(P.x,0,P.z);
+ near=null;let best=2.2;for(const k in spots){const d=Math.hypot(P.x-spots[k].x,P.z-spots[k].z);if(d<best){best=d;near=k}}
+ for(const n of NPC){const d=Math.hypot(P.x-n.x,P.z-n.z);if(!n.d&&d<1.8){n.d=1;say(n.n,n.t)}else if(n.d&&d>4)n.d=0}
+ act.style.display=near?'block':'none';if(near)act.textContent=near==='janji'?'SAPA':'BUKA';
+ cam.position.lerp(v.set(P.x+Math.sin(yaw)*Math.cos(pit)*dist,Math.sin(pit)*dist,P.z+Math.cos(yaw)*Math.cos(pit)*dist),.2);cam.lookAt(P.x,.5,P.z);
+ sun.position.set(P.x+6,12,P.z+4);sun.target.position.set(P.x,0,P.z);
+ for(const k in spots){const s=spots[k];v.set(s.x,s.h||1.7,s.z).project(cam);s.e.style.transform=`translate(${(v.x*.5+.5)*app.clientWidth}px,${(-v.y*.5+.5)*app.clientHeight}px) translate(-50%,-100%)`;s.e.style.display=v.z<1?'block':'none';s.e.style.boxShadow=near===k?'0 0 0 3px #4c7a45':'0 2px 0 #0003'}
+ fx(t,dt);R.render(sc,cam);requestAnimationFrame(loop)}
+// efek
+const mat=c=>new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}),cols=['#ffd770','#f7a8b8','#9fd6ff','#b8e08a','#e66a78'];
+const petals=[];for(let i=0;i<70;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(.14,.1),mat(i%3?'#f7a8b8':'#ffffff'));m.userData={vy:.4+Math.random()*.5,s:Math.random()*6,ox:Math.random()*20-10,oz:Math.random()*20-10,y:Math.random()*8};sc.add(m);petals.push(m)}
+const fl=[];for(let i=0;i<7;i++){const g=new THREE.Group();for(const s of[-1,1]){const w=new THREE.Mesh(new THREE.PlaneGeometry(.2,.16),mat(cols[i%3]));w.position.x=s*.1;w.userData.s=s;g.add(w)}g.userData={a:Math.random()*6,r:1.5+Math.random()*2.5,cx:4+Math.random()*10,cz:6+Math.random()*16};sc.add(g);fl.push(g)}
+const bal=[];cols.forEach((c,i)=>{const g=new THREE.Group(),b=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),new THREE.MeshLambertMaterial({color:c}));b.position.y=1.8;B(.02,1.5,.02,'#ffffff',0,.3,0,g);g.add(b);g.position.set(6.2+i*1.4,0,9.4+(i%2)*.4);sc.add(g);bal.push(g)});
+const hc=document.createElement('canvas');hc.width=hc.height=64;const hx=hc.getContext('2d');hx.font='48px serif';hx.textAlign='center';hx.fillText('💗',32,52);
+const ht=new THREE.CanvasTexture(hc),hearts=[];for(let i=0;i<6;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:ht,transparent:true}));s.scale.set(.5,.5,1);s.userData={t:i/6};sc.add(s);hearts.push(s)}
+const rip=[];for(let i=0;i<12;i++)rip.push(B(.7,.02,.08,'#ffffff',Math.random()*18,.03,20.2+Math.random()*1.6));
+const dg=(px,s)=>{const p=new THREE.Group();p.position.set(px,0,19.9);B(.85,1.3,.08,'#a0703c',s*.45,0,0,p);B(.85,.1,.1,'#c4452a',s*.45,1.3,0,p);B(.25,.25,.1,'#f7a8c4',s*.45,.8,.06,p);sc.add(p);return p};
+const gateL=dg(8.15,1),gateR=dg(9.85,-1);let gOpen=0,gO=false;
+const conf=[];function burst(x,z){for(let i=0;i<40;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.1,.1,.02),mat(cols[i%5]));m.position.set(x,1.4,z);m.userData={vx:(Math.random()-.5)*5,vy:3+Math.random()*3,vz:(Math.random()-.5)*5,l:2};sc.add(m);conf.push(m)}}
+function fx(t,dt){const s=t/1000;
+ const gd=Math.hypot(P.x-9,P.z-19.9)<4.5;if(gd&&!gO){gO=true;burst(9,19.5)}if(!gd&&gOpen<.1)gO=false;gOpen+=((gd?1:0)-gOpen)*Math.min(1,dt*4);gateL.rotation.y=1.5*gOpen;gateR.rotation.y=-1.5*gOpen;
+ petals.forEach(m=>{const u=m.userData;u.y-=u.vy*dt;if(u.y<0)u.y=8;m.position.set(P.x+u.ox+Math.sin(s+u.s)*.6,u.y,P.z+u.oz+Math.cos(s*.8+u.s)*.4);m.rotation.set(s*2+u.s,s+u.s,0)});
+ fl.forEach(g=>{const u=g.userData,a=u.a+s*.6;g.position.set(u.cx+Math.cos(a)*u.r,1+Math.sin(s*2+u.a)*.3,u.cz+Math.sin(a*1.3)*u.r);g.rotation.y=-a;g.children.forEach(w=>w.rotation.y=w.userData.s*Math.sin(s*18)*.9)});
+ CH.forEach(c=>{const u=c.userData;if(c===P.m){u.look=0;u.wave=0;animC(c,t,moving);return}const dx=P.x-c.position.x,dz=P.z-c.position.z,d=Math.hypot(dx,dz);u.look=d<5?Math.max(-.8,Math.min(.8,Math.atan2(dx,dz))):0;u.wave=d<3;animC(c,t,false)});
+ bal.forEach((g,i)=>{g.rotation.z=Math.sin(s*1.5+i)*.08;g.position.y=Math.sin(s+i)*.1});
+ hearts.forEach((h,i)=>{const u=h.userData;u.t=(u.t+dt*.25)%1;h.position.set(9+Math.sin(u.t*6+i)*.5,1.6+u.t*2.2,7);h.material.opacity=1-u.t});
+ rip.forEach(m=>{m.position.x=(m.position.x+dt*.6)%18});
+ for(let i=conf.length-1;i>=0;i--){const m=conf[i],u=m.userData;u.vy-=9*dt;m.position.x+=u.vx*dt;m.position.y+=u.vy*dt;m.position.z+=u.vz*dt;m.rotation.x+=dt*8;u.l-=dt;if(u.l<0||m.position.y<0){sc.remove(m);conf.splice(i,1)}}}
+const pk={s:'boy',c:'#6a8fd9'};
+document.querySelectorAll('#cards button').forEach(b=>b.onclick=()=>{pk.s=b.dataset.s;document.querySelectorAll('#cards button').forEach(x=>x.classList.toggle('on',x===b))});
+document.querySelectorAll('#sw i').forEach(i=>{i.style.background=i.dataset.c;i.onclick=()=>{pk.c=i.dataset.c;document.querySelectorAll('#sw i').forEach(x=>x.classList.toggle('on',x===i))}});
+document.getElementById('go').onclick=()=>{sc.remove(P.m);CH.splice(CH.indexOf(P.m),1);P.m=person(P.x,P.z,pk.c,pk.s==='girl'?'#4a2f26':'#3a2a1a',false,pk.s,{h:pk.h,a:pk.a});document.getElementById('pick').style.display='none';burst(P.x,P.z);dist=28;let kk=0;const iv=setInterval(()=>{kk+=.03;dist=28-13*(1-Math.pow(1-Math.min(kk,1),3));if(kk>=1)clearInterval(iv)},16);const nm=document.getElementById('nm').value.trim();setTimeout(()=>say('Penjaga buku tamu',(nm?'Halo, '+nm+'! ':'')+NPC[0].t),500)};
+pk.h=null;pk.a=null;document.querySelectorAll('.ch b').forEach(b=>b.onclick=()=>{const k=b.parentNode.dataset.k,on=b.classList.contains('on');b.parentNode.querySelectorAll('b').forEach(x=>x.classList.remove('on'));if(!on){b.classList.add('on');pk[k]=b.dataset.v}else pk[k]=null});
+const mus=document.getElementById('mus'),mel=[0,2,4,7,9,12,9,7,4,2];let ac,mi=null,mn=0;
+mus.onclick=()=>{if(mi){clearInterval(mi);mi=null;mus.style.opacity=.55;return}ac=ac||new(window.AudioContext||window.webkitAudioContext)();mus.style.opacity=1;mi=setInterval(()=>{const o=ac.createOscillator(),g=ac.createGain(),k=mel[mn++%mel.length]+(Math.floor(mn/10)%2?-2:0);o.type='triangle';o.frequency.value=392*Math.pow(2,k/12);g.gain.setValueAtTime(.08,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.6);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.6)},380)};
+cam.position.set(P.x,Math.sin(pit)*dist,P.z+Math.cos(pit)*dist);requestAnimationFrame(loop);
+</script></body></html>
